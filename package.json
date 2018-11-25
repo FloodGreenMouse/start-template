@@ -12,11 +12,19 @@
     "browser-sync": "^2.26.3",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^6.0.0",
+    "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^3.10.0",
+    "gulp-color": "0.0.2",
+    "gulp-download": "0.0.1",
+    "gulp-html-replace": "^1.6.2",
     "gulp-imagemin": "^5.0.3",
     "gulp-minify": "^3.1.0",
+    "gulp-prompt": "^1.1.0",
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-zip": "^4.2.0"
+  },
+  "dependencies": {
+    "ssh2": "^0.6.1"
   }
 }
