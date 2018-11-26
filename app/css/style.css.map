@@ -1,1 +1,0 @@
-{"version":3,"sources":["style.sass"],"names":[],"mappings":"AAAA;EACI,qCAAoC,EAAG;;AAE3C;EACI,mBAAkB,EAAG","file":"style.css","sourcesContent":["body {\n    font-family: 'Open Sans', sans-serif; }\n\nh1, h2 {\n    text-align: center; }\n"]}
