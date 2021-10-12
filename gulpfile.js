@@ -1,22 +1,22 @@
-var gulp = require('gulp');
-var browserSync = require('browser-sync');
-var prompt = require('gulp-prompt');
-var promptColor = require('gulp-color');
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var minifyCSS = require('gulp-clean-css');
-var sourcemaps = require('gulp-sourcemaps');
-var minifyJS = require('gulp-minify');
-var imagemin = require('gulp-imagemin');
-var htmlreplace = require('gulp-html-replace');
-var download = require('gulp-download');
-var clean = require('gulp-clean');
-var zip = require('gulp-zip');
-var fs = require('fs');
+const gulp = require('gulp')
+const browserSync = require('browser-sync')
+const prompt = require('gulp-prompt')
+const promptColor = require('gulp-color')
+const sass = require('gulp-sass')
+const autoprefixer = require('gulp-autoprefixer')
+const minifyCSS = require('gulp-clean-css')
+const sourcemaps = require('gulp-sourcemaps')
+const minifyJS = require('gulp-minify')
+const imagemin = require('gulp-imagemin')
+const htmlreplace = require('gulp-html-replace')
+const download = require('gulp-download')
+const clean = require('gulp-clean')
+const zip = require('gulp-zip')
+const fs = require('fs')
 
-var replaceParamJS = '';
-var replaceParamCSS = '';
-var cleanFiles = [];
+let replaceParamJS = ''
+let replaceParamCSS = ''
+let cleanFiles = []
 
 gulp.task('browserSync', function() {
 	browserSync({
@@ -24,7 +24,7 @@ gulp.task('browserSync', function() {
 			baseDir: 'app'
 		},
 	})
-});
+})
 
 //SASS task
 gulp.task('sass', function() {
@@ -39,8 +39,8 @@ gulp.task('sass', function() {
 	.pipe(gulp.dest('app/css'))
 	.pipe(browserSync.reload({
 		stream: true
-	}));
-});
+	}))
+})
 
 //CSS minification task
 gulp.task('mini-css', function(){
@@ -48,8 +48,8 @@ gulp.task('mini-css', function(){
 	.pipe(sourcemaps.init())
 	.pipe(minifyCSS({compatibility: 'ie8'}))
 	.pipe(sourcemaps.write('.'))
-	.pipe(gulp.dest('app/css/minifyCSS'));
-});
+	.pipe(gulp.dest('app/css/minifyCSS'))
+})
 
 //JS minification task
 gulp.task('mini-js', function() {
@@ -61,31 +61,31 @@ gulp.task('mini-js', function() {
 		noSource: true,
 		ignoreFiles: ['bootsrtap.min.js'],
 	}))
-	.pipe(gulp.dest('app/js/minifyJS'));
-});
+	.pipe(gulp.dest('app/js/minifyJS'))
+})
 
 //Image optimization task
 gulp.task('opti-img', function() {
 	gulp.src('app/img/*')
 	.pipe(imagemin())
-	.pipe(gulp.dest('app/img/optimizeIMG'));
-});
+	.pipe(gulp.dest('app/img/optimizeIMG'))
+})
 
 //Zip task
 gulp.task('zip', function(){
 	gulp.src('dist/**')
 	.pipe(zip('build.zip'))
-	.pipe(gulp.dest('./'));
+	.pipe(gulp.dest('./'))
 })
 
 //Build task
-gulp.task('build', ['zip'], function(){
+gulp.task('build', gulp.series('zip'), function(){
 	//Minification CSS
 	gulp.src(['app/css/**/*.css', '!app/css/minifyCSS/*.css', '!app/css/minifyCSS/**/*.css'])
 	.pipe(sourcemaps.init())
 	.pipe(minifyCSS({compatibility: 'ie8'}))
 	.pipe(sourcemaps.write('.'))
-	.pipe(gulp.dest('dist/css'));
+	.pipe(gulp.dest('dist/css'))
 	//Minification JS
 	gulp.src(['app/js/**/*.js', '!app/js/minifyJS/*.js', '!app/js/minifyJS/**/*.js'])
 	.pipe(minifyJS({
@@ -94,53 +94,53 @@ gulp.task('build', ['zip'], function(){
 		},
 		noSource: true,
 	}))
-	.pipe(gulp.dest('dist/js'));
+	.pipe(gulp.dest('dist/js'))
 	//Optimization IMG
 	gulp.src(['app/img/**', '!app/img/optimizeIMG/*', '!app/img/optimizeIMG/**/*'])
 	.pipe(imagemin())
-	.pipe(gulp.dest('dist/img'));
+	.pipe(gulp.dest('dist/img'))
 	//Move fonts
 	fs.readdir('app/fonts', function(err, files){
 		if (err) {
-			console.log("Folder /fonts doesn't exist");
+			console.log("Folder /fonts doesn't exist")
 		} else {
 			if (files.length) {
 				gulp.src('app/fonts/**')
-				.pipe(gulp.dest('dist/fonts'));
+				.pipe(gulp.dest('dist/fonts'))
 			} else {
-				console.log("Files doesn't exist in /fonts folder");
+				console.log("Files doesn't exist in /fonts folder")
 			}
 		}
-	});
+	})
 	//Move template folder if exists
 	fs.readdir('app/templates', function(err, files){
 		if (err) {
-			console.log("Folder /templates doesn't exist");
+			console.log("Folder /templates doesn't exist")
 		} else {
 			if (files.length) {
 				gulp.src('app/templates/**/*.html')
-				.pipe(gulp.dest('dist/templates'));
+				.pipe(gulp.dest('dist/templates'))
 			} else {
-				console.log("Files doesn't exist in /templates folder");
+				console.log("Files doesn't exist in /templates folder")
 			}
 		}
-	});
+	})
 	//Move index.html
 	gulp.src('app/index.html')
-	.pipe(gulp.dest('dist'));
+	.pipe(gulp.dest('dist'))
 	//Move favicon
 	gulp.src('app/favicon.ico')
-	.pipe(gulp.dest('dist'));
-});
+	.pipe(gulp.dest('dist'))
+})
 
 //Watcher
-gulp.task('default', ['browserSync', 'sass'], function() {
-	gulp.watch('app/sass/**/*.sass', ['sass']);
-	gulp.watch('app/css/**/*.css', browserSync.reload);
-	gulp.watch('app/*.html', browserSync.reload);
-	gulp.watch('app/templates/*.html', browserSync.reload);
-	gulp.watch('app/js/**/*.js', browserSync.reload);
-});
+gulp.task('default', gulp.series('browserSync', 'sass'), function() {
+	gulp.watch('app/sass/**/*.sass', ['sass'])
+	gulp.watch('app/css/**/*.css', browserSync.reload)
+	gulp.watch('app/*.html', browserSync.reload)
+	gulp.watch('app/templates/*.html', browserSync.reload)
+	gulp.watch('app/js/**/*.js', browserSync.reload)
+})
 
 //Start task
 gulp.task('start', function() {
@@ -173,84 +173,84 @@ gulp.task('start', function() {
 				message: promptColor("WARNING", 'RED')+" \n Are you sure? (y/n)",
 			}, function(res) {
 					if(res.confirmChoice == 'Yes' || res.confirmChoice == 'y' || res.confirmChoice == 'yes' || res.confirmChoice == 'Y' ) {
-						downloadUtils(result.startChoice);
+						downloadUtils(result.startChoice)
 					} else {
-						gulp.start('start');
+						gulp.start('start')
 					}
 				}))
 
 		} else {
-			gulp.start('start');
-			console.log(promptColor("=== Wrong answer, please, try again === \n", 'RED'));
+			gulp.start('start')
+			console.log(promptColor("=== Wrong answer, please, try again === \n", 'RED'))
 		}
 	}))
 })
 
 //Download paths for start task
-var downloadUtils = function (startChoice) {
+const downloadUtils = function (startChoice) {
 	//Files for cleaning in css and js directories
-	cleanFiles = ['app/js/bootstrap.min.js', 'app/js/semantic.min.js', 'app/js/popper.min.js', 'app/js/jquery-3.2.1.slim.min.js', 'app/css/normalize.css', 'app/css/semantic.min.css', 'app/css/bootstrap.min.css', 'app/css/bootstrap.min.css.map', 'app/css/bootstrap-grid.min.css', 'app/css/bootstrap-grid.min.css.map'];
+	cleanFiles = ['app/js/bootstrap.min.js', 'app/js/semantic.min.js', 'app/js/popper.min.js', 'app/js/jquery-3.2.1.slim.min.js', 'app/css/normalize.css', 'app/css/semantic.min.css', 'app/css/bootstrap.min.css', 'app/css/bootstrap.min.css.map', 'app/css/bootstrap-grid.min.css', 'app/css/bootstrap-grid.min.css.map']
 	gulp.src(cleanFiles, {read: false})
-	.pipe(clean());
+	.pipe(clean())
 	switch(startChoice) {
 		case '1':
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
-			.pipe(gulp.dest('app/css'));
+			.pipe(gulp.dest('app/css'))
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css.map')
-			.pipe(gulp.dest('app/css'));
+			.pipe(gulp.dest('app/css'))
 			download('https://code.jquery.com/jquery-3.2.1.slim.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			download('https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			//Variables for replace in index.html
-			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/popper.min.js', 'js/bootstrap.min.js', '<!-- endbuild -->'];
-			replaceParamCSS = ['<!-- build:css -->','css/bootstrap.min.css','<!-- endbuild -->'];
-		break;
+			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/popper.min.js', 'js/bootstrap.min.js', '<!-- endbuild -->']
+			replaceParamCSS = ['<!-- build:css -->','css/bootstrap.min.css','<!-- endbuild -->']
+		break
 		case '2':
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap-grid.min.css')
-			.pipe(gulp.dest('app/css'));
+			.pipe(gulp.dest('app/css'))
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap-grid.min.css.map')
-			.pipe(gulp.dest('app/css'));
+			.pipe(gulp.dest('app/css'))
 			download('https://code.jquery.com/jquery-3.2.1.slim.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			download('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			//Variables for replace in index.html
-			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/bootstrap.min.js', '<!-- endbuild -->'];
-			replaceParamCSS = ['<!-- build:css -->','css/bootstrap-grid.min.css','<!-- endbuild -->'];
-		break;
+			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/bootstrap.min.js', '<!-- endbuild -->']
+			replaceParamCSS = ['<!-- build:css -->','css/bootstrap-grid.min.css','<!-- endbuild -->']
+		break
 		case '3':
 			download('https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css')
-			.pipe(gulp.dest('app/css'));
+			.pipe(gulp.dest('app/css'))
 			download('https://code.jquery.com/jquery-3.2.1.slim.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			download('https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js')
-			.pipe(gulp.dest('app/js'));
+			.pipe(gulp.dest('app/js'))
 			//Variables for replace in index.html
-			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/semantic.min.js', '<!-- endbuild -->'];
-			replaceParamCSS = ['<!-- build:css -->','css/semantic.min.css','<!-- endbuild -->'];
-		break;
+			replaceParamJS = ['<!-- build:js -->', 'js/jquery-3.2.1.slim.min.js', 'js/semantic.min.js', '<!-- endbuild -->']
+			replaceParamCSS = ['<!-- build:css -->','css/semantic.min.css','<!-- endbuild -->']
+		break
 		case '4':
 			download('https://necolas.github.io/normalize.css/8.0.1/normalize.css')
-			.pipe(gulp.dest('app/css'));
-			replaceParamJS = ['<!-- build:js -->','<!-- endbuild -->'];
-			replaceParamCSS = ['<!-- build:css -->', 'css/normalize.css', '<!-- endbuild -->'];	
-		break;
+			.pipe(gulp.dest('app/css'))
+			replaceParamJS = ['<!-- build:js -->','<!-- endbuild -->']
+			replaceParamCSS = ['<!-- build:css -->', 'css/normalize.css', '<!-- endbuild -->']
+		break
 		case '5':
-			replaceParamJS = ['<!-- build:js -->','<!-- endbuild -->'];
-			replaceParamCSS = ['<!-- build:css -->','<!-- endbuild -->'];
-			console.log('Done');
-		break;
+			replaceParamJS = ['<!-- build:js -->','<!-- endbuild -->']
+			replaceParamCSS = ['<!-- build:css -->','<!-- endbuild -->']
+			console.log('Done')
+		break
 		case '0':
-			return;
-		break;
+			return
+		break
 	}
 	gulp.src('app/index.html')
 	.pipe(htmlreplace({
 		js: replaceParamJS,
 		css: replaceParamCSS,
 	}))
-	.pipe(gulp.dest('app/'));
+	.pipe(gulp.dest('app/'))
 }
